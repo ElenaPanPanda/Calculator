@@ -3,6 +3,7 @@ package com.example.basiccalculator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
+import android.util.Log
 import com.example.basiccalculator.databinding.ActivityMainBinding
 
 class Display() {
@@ -143,64 +144,101 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun clickOperationButton(firstTerm: String, operation: Operation): String {
-       val result: String
+        val result: String
 
-       if (firstTerm != "") {
-           result = clickEqualButton(firstTerm, operation)
-       } else {
-           val displayText =
-               if (binding.displayEditText.text.toString() != "") {
-                   binding.displayEditText.text.toString()
-               } else
-                   binding.displayEditText.hint.toString()
+        /*if (firstTerm != "") {
+            Log.d("div", "firstTerm != \"\"")
 
+            result = clickEqualButton(firstTerm, operation)
+        } else {
+            val displayText =
+                if (binding.displayEditText.text.toString() == "") {
+                    binding.displayEditText.hint.toString()
+                } else {
+                    binding.displayEditText.text.toString()
+                }
 
-           result = if (displayText == "") "0.0" else displayText
-           binding.displayEditText.setText("")
-           binding.displayEditText.hint = result.toDouble().toString()
-       }
+            binding.displayEditText.setText("")
 
-       return result
+            result = if (isDouble(displayText)) {
+                displayText.toDouble().toString()
+            } else {
+                displayText.toInt().toString()
+            }
+
+            binding.displayEditText.hint = result
+        }*/
+
+        val displayText =
+            if (binding.displayEditText.text.toString() == "") {
+                binding.displayEditText.hint.toString()
+            } else {
+                binding.displayEditText.text.toString()
+            }
+
+        binding.displayEditText.setText("")
+
+        result = if (isDouble(displayText)) {
+            displayText.toDouble().toString()
+        } else {
+            displayText.toInt().toString()
+        }
+
+        binding.displayEditText.hint = result
+
+        return result
     }
 
-    /*private fun clickOperationButton(): String {
-        val displayText: String =
-            if (binding.displayEditText.text.toString() != "") {
-                binding.displayEditText.text.toString()
-            } else
-                binding.displayEditText.hint.toString()
-
-        var firstTerm = ""
-
-        firstTerm = if (displayText == "") "0.0" else displayText
-        binding.displayEditText.setText("")
-        binding.displayEditText.hint = firstTerm.toDouble().toString()
-
-        return firstTerm
-    }*/
-
     private fun clickEqualButton(firstTerm: String, operation: Operation): String {
-        val displayText = binding.displayEditText.text.toString()
+        val displayText: String
+
+        if (binding.displayEditText.text.toString() == "") {
+
+            // I'm never here
+
+            displayText = "0"
+            Log.d("displayText", "I'm if")
+        } else {
+            displayText = binding.displayEditText.text.toString()
+            Log.d("displayText", "I'm else")
+        }
+
+        //Log.d("div", "firstTerm = $firstTerm")
+        //Log.d("div", "operation = $operation")
+        //Log.d("div", "displayText = $displayText")
 
         val result = when (operation) {
             Operation.ADD -> firstTerm.toDouble() + displayText.toDouble()
             Operation.SUBTRACT -> firstTerm.toDouble() - displayText.toDouble()
             Operation.MULTIPLY -> firstTerm.toDouble() * displayText.toDouble()
             Operation.DIVIDE -> firstTerm.toDouble() / displayText.toDouble()
-            Operation.NOTHING -> displayText
+            Operation.NOTHING -> displayText.toDouble()
         }
 
         binding.displayEditText.setText("")
-        binding.displayEditText.hint = result.toString()
 
-        return result.toString()
+        val resultString: String = if (isDouble(result.toString())) {
+            result.toString()
+        } else {
+            result.toInt().toString()
+        }
+
+        binding.displayEditText.hint = resultString
+
+        return resultString
     }
 
     private fun isUnaryMinus(): Boolean = binding.displayEditText.text.toString() == ""
+
+    private fun isDouble(number: String): Boolean {
+        val rem = number.toDouble() - number.toDouble().toInt()
+        return rem != 0.0
+    }
+
 }
 
 
-
+// 1 + 2 = + 6 = + 1.5 = * 2 = /
 
 
 
