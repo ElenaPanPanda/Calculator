@@ -126,6 +126,8 @@ class MainActivity : AppCompatActivity() {
         } else {
             binding.displayEditText.setText(displayText + digit)
         }
+
+        //Log.d("dot in digit button", "text = ${binding.displayEditText.text}")
     }
 
     private fun clickDotButton() {
@@ -141,11 +143,14 @@ class MainActivity : AppCompatActivity() {
                 binding.displayEditText.setText(displayText + ".")
             }
         }
+
+        //Log.d("dot in dot button", binding.displayEditText.text.toString())
     }
 
     private fun clickOperationButton(firstTerm: String, operation: Operation): String {
         val result: String
 
+        // n + n + n
         /*if (firstTerm != "") {
             Log.d("div", "firstTerm != \"\"")
 
@@ -169,6 +174,9 @@ class MainActivity : AppCompatActivity() {
             binding.displayEditText.hint = result
         }*/
 
+        //Log.d("dot", "firstTerm = $firstTerm")
+        //Log.d("dot", "operation = $operation")
+
         val displayText =
             if (binding.displayEditText.text.toString() == "") {
                 binding.displayEditText.hint.toString()
@@ -176,13 +184,17 @@ class MainActivity : AppCompatActivity() {
                 binding.displayEditText.text.toString()
             }
 
+        //Log.d("dot", "displayText = $displayText")
+
         binding.displayEditText.setText("")
 
-        result = if (isDouble(displayText)) {
-            displayText.toDouble().toString()
+
+        if (isDouble(displayText)) {
+            result = displayText.toDouble().toString()
         } else {
-            displayText.toInt().toString()
+            result = displayText.toDouble().toInt().toString()
         }
+
 
         binding.displayEditText.hint = result
 
@@ -190,17 +202,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun clickEqualButton(firstTerm: String, operation: Operation): String {
-        val displayText: String
-
-        if (binding.displayEditText.text.toString() == "") {
+        val displayText: String = if (binding.displayEditText.text.toString() == "") {
 
             // I'm never here
 
-            displayText = "0"
-            Log.d("displayText", "I'm if")
+            "0"
+
         } else {
-            displayText = binding.displayEditText.text.toString()
-            Log.d("displayText", "I'm else")
+            binding.displayEditText.text.toString()
+
         }
 
         //Log.d("div", "firstTerm = $firstTerm")
