@@ -6,9 +6,6 @@ import android.text.InputType
 import android.util.Log
 import com.example.basiccalculator.databinding.ActivityMainBinding
 
-class Display() {
-
-}
 
 enum class Operation(val symbol: String) {
     ADD("+"),
@@ -17,11 +14,6 @@ enum class Operation(val symbol: String) {
     DIVIDE("/"),
     NOTHING("")
 }
-
-data class EqualButton(
-    val result: String,
-    val secondTern: String
-)
 
 
 class MainActivity : AppCompatActivity() {
@@ -37,6 +29,7 @@ class MainActivity : AppCompatActivity() {
 
         var operation = Operation.NOTHING
         var firstTerm = ""
+        var secondTerm = ""
 
         binding.button1.setOnClickListener {
             clickDigitButton(binding.button1.text.toString())
@@ -86,17 +79,20 @@ class MainActivity : AppCompatActivity() {
             binding.displayEditText.setText("")
             binding.displayEditText.hint = "0"
             firstTerm = ""
+            secondTerm = ""
             operation = Operation.NOTHING
         }
 
         binding.addButton.setOnClickListener {
             firstTerm = clickOperationButton(firstTerm, operation)
+            if (secondTerm == "") secondTerm = firstTerm
             operation = Operation.ADD
         }
 
         binding.subtractButton.setOnClickListener {
             if (!isUnaryMinus()) {
                 firstTerm = clickOperationButton(firstTerm, operation)
+                if (secondTerm == "") secondTerm = firstTerm
                 operation = Operation.SUBTRACT
             } else {
                 binding.displayEditText.setText("-")
@@ -105,16 +101,21 @@ class MainActivity : AppCompatActivity() {
 
         binding.multiplyButton.setOnClickListener {
             firstTerm = clickOperationButton(firstTerm, operation)
+            if (secondTerm == "") secondTerm = firstTerm
             operation = Operation.MULTIPLY
         }
 
         binding.divideButton.setOnClickListener {
             firstTerm = clickOperationButton(firstTerm, operation)
+            if (secondTerm == "") secondTerm = firstTerm
             operation = Operation.DIVIDE
         }
 
         binding.equalButton.setOnClickListener {
-            firstTerm = clickEqualButton(firstTerm, operation)
+            secondTerm = findSecondTerm(secondTerm)
+
+            firstTerm = clickEqualButton(firstTerm, secondTerm, operation)
+
         }
     }
 
@@ -126,8 +127,6 @@ class MainActivity : AppCompatActivity() {
         } else {
             binding.displayEditText.setText(displayText + digit)
         }
-
-        //Log.d("dot in digit button", "text = ${binding.displayEditText.text}")
     }
 
     private fun clickDotButton() {
@@ -143,17 +142,13 @@ class MainActivity : AppCompatActivity() {
                 binding.displayEditText.setText(displayText + ".")
             }
         }
-
-        //Log.d("dot in dot button", binding.displayEditText.text.toString())
     }
 
     private fun clickOperationButton(firstTerm: String, operation: Operation): String {
-        val result: String
+        val newFirstTerm: String
 
         // n + n + n
         /*if (firstTerm != "") {
-            Log.d("div", "firstTerm != \"\"")
-
             result = clickEqualButton(firstTerm, operation)
         } else {
             val displayText =
@@ -174,9 +169,6 @@ class MainActivity : AppCompatActivity() {
             binding.displayEditText.hint = result
         }*/
 
-        //Log.d("dot", "firstTerm = $firstTerm")
-        //Log.d("dot", "operation = $operation")
-
         val displayText =
             if (binding.displayEditText.text.toString() == "") {
                 binding.displayEditText.hint.toString()
@@ -184,45 +176,43 @@ class MainActivity : AppCompatActivity() {
                 binding.displayEditText.text.toString()
             }
 
-        //Log.d("dot", "displayText = $displayText")
 
         binding.displayEditText.setText("")
 
-
-        if (isDouble(displayText)) {
-            result = displayText.toDouble().toString()
+        newFirstTerm = if (isDouble(displayText)) {
+            displayText.toDouble().toString()
         } else {
-            result = displayText.toDouble().toInt().toString()
+            displayText.toDouble().toInt().toString()
         }
 
+        binding.displayEditText.hint = newFirstTerm
 
-        binding.displayEditText.hint = result
-
-        return result
+        return newFirstTerm
     }
 
-    private fun clickEqualButton(firstTerm: String, operation: Operation): String {
-        val displayText: String = if (binding.displayEditText.text.toString() == "") {
+    private fun clickEqualButton(
+        firstTerm: String,
+        secondTerm: String,
+        operation: Operation
+    ): String {
+        /*val secondTerm: String
+
+        if (binding.displayEditText.text.toString() == "") {
 
             // I'm never here
 
-            "0"
+            secondTerm = "0"
 
         } else {
-            binding.displayEditText.text.toString()
-
-        }
-
-        //Log.d("div", "firstTerm = $firstTerm")
-        //Log.d("div", "operation = $operation")
-        //Log.d("div", "displayText = $displayText")
+            secondTerm = binding.displayEditText.text.toString()
+        }*/
 
         val result = when (operation) {
-            Operation.ADD -> firstTerm.toDouble() + displayText.toDouble()
-            Operation.SUBTRACT -> firstTerm.toDouble() - displayText.toDouble()
-            Operation.MULTIPLY -> firstTerm.toDouble() * displayText.toDouble()
-            Operation.DIVIDE -> firstTerm.toDouble() / displayText.toDouble()
-            Operation.NOTHING -> displayText.toDouble()
+            Operation.ADD -> firstTerm.toDouble() + secondTerm.toDouble()
+            Operation.SUBTRACT -> firstTerm.toDouble() - secondTerm.toDouble()
+            Operation.MULTIPLY -> firstTerm.toDouble() * secondTerm.toDouble()
+            Operation.DIVIDE -> firstTerm.toDouble() / secondTerm.toDouble()
+            Operation.NOTHING -> secondTerm.toDouble()
         }
 
         binding.displayEditText.setText("")
@@ -245,10 +235,17 @@ class MainActivity : AppCompatActivity() {
         return rem != 0.0
     }
 
+    private fun findSecondTerm(secondTerm: String): String {
+        var newSecondTerm = secondTerm
+
+        if (binding.displayEditText.text.toString() != "") {
+            newSecondTerm = binding.displayEditText.text.toString()
+        }
+
+        return newSecondTerm
+    }
+
 }
-
-
-// 1 + 2 = + 6 = + 1.5 = * 2 = /
 
 
 
