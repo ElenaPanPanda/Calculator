@@ -15,8 +15,16 @@ enum class Operation(val symbol: String) {
     NOTHING("")
 }
 
+const val FIRST_TERM = "first_term"
+const val SECOND_TERM = "second_term"
+const val OPERATION = "operation"
+
 
 class MainActivity : AppCompatActivity() {
+
+    private var operation = Operation.NOTHING
+    private var firstTerm = ""
+    private var secondTerm = ""
 
     private lateinit var binding: ActivityMainBinding
 
@@ -25,11 +33,13 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        /*if (savedInstanceState != null) {
+            firstTerm = savedInstanceState.getString(FIRST_TERM, "")
+            secondTerm = savedInstanceState.getString(SECOND_TERM, "")
+        }*/
+
         binding.displayEditText.inputType = InputType.TYPE_NULL
 
-        var operation = Operation.NOTHING
-        var firstTerm = ""
-        var secondTerm = ""
 
         binding.button1.setOnClickListener {
             clickDigitButton(binding.button1.text.toString())
@@ -118,6 +128,14 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
+
+    /*override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putString(FIRST_TERM, firstTerm)
+        outState.putString(SECOND_TERM, secondTerm)
+
+    }*/
 
     private fun clickDigitButton(digit: String) {
         val displayText = binding.displayEditText.text.toString()
